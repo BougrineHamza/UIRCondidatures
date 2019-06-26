@@ -1,7 +1,11 @@
 {
     "name": "laravel/lumen",
     "description": "The Laravel Lumen Framework.",
-    "keywords": ["framework", "laravel", "lumen"],
+    "keywords": [
+        "framework",
+        "laravel",
+        "lumen"
+    ],
     "license": "MIT",
     "type": "project",
     "require": {
@@ -9,12 +13,11 @@
         "barryvdh/laravel-dompdf": "^0.8.4",
         "guzzlehttp/guzzle": "^6.3",
         "illuminate/mail": "^5.8",
-        "laravel/lumen-framework": "5.8.*",
         "laravelista/lumen-vendor-publish": "^2.1",
         "league/fractal": "^0.17.0",
         "maatwebsite/laravel-excel-light": "dev-master",
         "orumad/lumen-config-cache": "^1.0",
-        "vlucas/phpdotenv": "^3.3"
+        "laravel/framework": "5.8.*"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
