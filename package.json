@@ -1,0 +1,33 @@
+{
+  "private": true,
+  "scripts": {
+    "dev": "npm run development",
+    "development": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "watch": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --watch --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "watch-poll": "npm run watch -- --watch-poll",
+    "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "prod": "npm run production",
+    "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
+  },
+  "devDependencies": {
+    "cross-env": "^5.2.0",
+    "laravel-mix": "^2.0"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "idle-vue": "^2.0.5",
+    "vee-validate": "^2.1.7",
+    "vue": "^2.6.8",
+    "vue-analytics": "^5.16.4",
+    "vue-axios": "^2.1.4",
+    "vue-cool-select": "^2.3.0",
+    "vue-date-pick": "^1.1.0",
+    "vue-router": "^3.0.2",
+    "vue-sticky": "^3.3.4",
+    "vue-the-mask": "^0.11.1",
+    "vue-toasted": "^1.1.26",
+    "vuetify": "^1.5.14",
+    "vuex": "^3.1.0",
+    "xlsx": "^0.14.3"
+  }
+}
