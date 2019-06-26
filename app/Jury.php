@@ -2,13 +2,12 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
-use App\ConcourTime;
 use App\UirEcole;
+use App\ConcourTime;
+use Illuminate\Database\Eloquent\Model;
 
 class Jury extends Model
 {
-
     /**
      * The attributes that are mass assignable.
      *
@@ -17,7 +16,7 @@ class Jury extends Model
     protected $fillable = [
         'name',
         'email',
-        'phone'
+        'phone',
 
     ];
 
@@ -31,16 +30,14 @@ class Jury extends Model
     ];
 
     public $timestamps = false;
-    
+
     public function concourtime()
     {
         return $this->hasMany(ConcourTime::class);
-
     }
 
     public function uirecole()
     {
         return $this->belongsTo(UirEcole::class);
-
     }
 }

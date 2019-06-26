@@ -1,22 +1,14 @@
 <?php
 
 namespace App;
-// use Illuminate\Notifications\Notifiable;
-use Illuminate\Auth\Authenticatable;
-use Laravel\Lumen\Auth\Authorizable;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
-use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
-use App\Profil;
-use App\Stat;
-use App\Cursus;
-use App\Convocation;
-use App\ConcourTime;
-// use App\Cloned;
 
-class User extends Model implements AuthenticatableContract, AuthorizableContract
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+
+class User extends Authenticatable
 {
-    use Authenticatable, Authorizable;//, Notifiable;
+    use Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -24,55 +16,24 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      * @var array
      */
     protected $fillable = [
-        'first_name', 'last_name', 'email','password','api_token', 'uir_student'
+        'name', 'email', 'password',
     ];
 
     /**
-     * The attributes excluded from the model's JSON form.
+     * The attributes that should be hidden for arrays.
      *
      * @var array
      */
     protected $hidden = [
-        'password',
-        'updated_at'
+        'password', 'remember_token',
     ];
 
-
-    public function profil()
-    {
-        return $this->hasOne(Profil::class);
-
-    }
-
-    public function stat()
-    {
-        return $this->hasOne(Stat::class);
-
-    }
-
-    public function cursus()
-    {
-        return $this->hasOne(Cursus::class);
-
-    }
-
-
-    public function convocation()
-    {
-        return $this->hasMany(Convocation::class);
-
-    }
-
-    public function concourtime()
-    {
-        return $this->hasMany(ConcourTime::class);
-
-    }
-
-    // public function clone()
-    // {
-    //     return $this->hasOne(Clone::class);
-
-    // }
-
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
 }

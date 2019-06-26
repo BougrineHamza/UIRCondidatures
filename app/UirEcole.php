@@ -2,13 +2,12 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
-use App\UirFormation;
 use App\Admin;
+use App\UirFormation;
+use Illuminate\Database\Eloquent\Model;
 
 class UirEcole extends Model
 {
-
     /**
      * The attributes that are mass assignable.
      *
@@ -17,7 +16,7 @@ class UirEcole extends Model
     protected $fillable = [
         'logo_path',
         'color',
-        'titre'
+        'titre',
 
     ];
 
@@ -35,14 +34,10 @@ class UirEcole extends Model
     public function uirformation()
     {
         return $this->hasMany(UirFormation::class);
-
     }
-
-
 
     public function admin()
     {
         return $this->hasMany(Admin::class);
-
     }
 }

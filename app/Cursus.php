@@ -2,14 +2,12 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
 use App\User;
 use App\Specialite;
-
+use Illuminate\Database\Eloquent\Model;
 
 class Cursus extends Model
 {
-
     /**
      * The attributes that are mass assignable.
      *
@@ -24,7 +22,7 @@ class Cursus extends Model
         'typedu',
         'specialite_id',
         'school',
-        'mes_formations_uir'
+        'mes_formations_uir',
 
     ];
 
@@ -40,13 +38,10 @@ class Cursus extends Model
     public function specialite()
     {
         return $this->belongsTo(Specialite::class);
-
     }
-
 
     public function user()
     {
         return $this->belongsTo(User::class);
-
     }
 }

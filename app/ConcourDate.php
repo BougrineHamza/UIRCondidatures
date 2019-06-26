@@ -2,21 +2,20 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
+use App\ConcourTime;
 
 use App\UirFormation;
-use App\ConcourTime;
+use Illuminate\Database\Eloquent\Model;
 
 class ConcourDate extends Model
 {
-
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'uirformation_id','date_concours'
+        'uirformation_id', 'date_concours',
     ];
 
     /**
@@ -28,20 +27,13 @@ class ConcourDate extends Model
 
     ];
 
-
-
     public function uirformation()
     {
         return $this->belongsTo(UirFormation::class);
-
     }
-
 
     public function concourtime()
     {
         return $this->hasMany(ConcourTime::class);
-
     }
-
-
 }

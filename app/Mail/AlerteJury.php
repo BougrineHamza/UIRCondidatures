@@ -24,8 +24,6 @@ class AlerteJury extends Mailable
 
     public $cin_candidat;
 
-
-
     /**
      * Create a new message instance.
      *
@@ -46,9 +44,6 @@ class AlerteJury extends Mailable
         $this->jury_name = $jury_name;
 
         $this->cin_candidat = $cin_candidat;
-
-
-
     }
 
     /**
@@ -67,6 +62,6 @@ class AlerteJury extends Mailable
                         'heure_entretien' => $this->heure_entretien,
                         'nom_candidat' => $this->nom_candidat,
                         'jury_name' => $this->jury_name,
-                        'cin_candidat' => $this->cin_candidat]);
+                        'cin_candidat' => $this->cin_candidat, ]);
     }
 }

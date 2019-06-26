@@ -2,14 +2,13 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
 use App\UirEcole;
 use App\ConcourDate;
 use App\ConcourTime;
+use Illuminate\Database\Eloquent\Model;
 
 class UirFormation extends Model
 {
-
     /**
      * The attributes that are mass assignable.
      *
@@ -21,7 +20,7 @@ class UirFormation extends Model
         'condition_niveau',
         'condition_specialites',
         'code_agresso',
-        'prerequis_html'
+        'prerequis_html',
     ];
 
     /**
@@ -34,7 +33,6 @@ class UirFormation extends Model
     ];
 
     public $timestamps = false;
-    
 
     public function concourdate()
     {
@@ -44,12 +42,10 @@ class UirFormation extends Model
     public function uirecole()
     {
         return $this->belongsTo(UirEcole::class);
-
     }
 
     public function concourtime()
     {
         return $this->hasMany(UirEcole::class);
-
     }
 }

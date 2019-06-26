@@ -2,12 +2,11 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
 use App\Cursus;
+use Illuminate\Database\Eloquent\Model;
 
 class Specialite extends Model
 {
-
     /**
      * The attributes that are mass assignable.
      *
@@ -15,7 +14,7 @@ class Specialite extends Model
      */
     protected $fillable = [
         'titre',
-        'uirformation_id_map'
+        'uirformation_id_map',
 
     ];
 
@@ -29,12 +28,9 @@ class Specialite extends Model
     ];
 
     public $timestamps = false;
-    
-
 
     public function cursus()
     {
         return $this->hasOne(Cursus::class);
-
     }
 }

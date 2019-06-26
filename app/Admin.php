@@ -1,18 +1,20 @@
 <?php
 
 namespace App;
+
 // use Illuminate\Notifications\Notifiable;
+use App\UirEcole;
 use Illuminate\Auth\Authenticatable;
 use Laravel\Lumen\Auth\Authorizable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
-use App\UirEcole;
+
 // use App\Cloned;
 
 class Admin extends Model implements AuthenticatableContract, AuthorizableContract
 {
-    use Authenticatable, Authorizable;//, Notifiable;
+    use Authenticatable, Authorizable; //, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -20,7 +22,7 @@ class Admin extends Model implements AuthenticatableContract, AuthorizableContra
      * @var array
      */
     protected $fillable = [
-        'first_name', 'last_name', 'email','password','api_token', 'uirecole_id','role'
+        'first_name', 'last_name', 'email', 'password', 'api_token', 'uirecole_id', 'role',
     ];
 
     /**
@@ -29,19 +31,13 @@ class Admin extends Model implements AuthenticatableContract, AuthorizableContra
      * @var array
      */
     protected $hidden = [
-        'password'
+        'password',
     ];
 
-
     public $timestamps = false;
-    
-
 
     public function uirecole()
     {
         return $this->belongsTo(UirEcole::class);
-
     }
-
-
 }

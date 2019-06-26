@@ -2,13 +2,12 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
 use App\User;
 use App\Localisation;
+use Illuminate\Database\Eloquent\Model;
 
 class Profil extends Model
 {
-
     /**
      * The attributes that are mass assignable.
      *
@@ -20,7 +19,7 @@ class Profil extends Model
         'country_id',
         'city_id',
         'address',
-        'phone'
+        'phone',
 
     ];
 
@@ -33,10 +32,8 @@ class Profil extends Model
 
     ];
 
-
     public function user()
     {
         return $this->belongsTo(User::class);
-
     }
 }

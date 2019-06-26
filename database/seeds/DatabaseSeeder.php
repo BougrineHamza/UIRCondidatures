@@ -11,6 +11,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        factory(App\ConcourTime::class,10)->create();
+        factory(App\ConcourTime::class, 10)->create();
     }
 }
