@@ -24,13 +24,12 @@ class Decision extends Mailable
 
     public $nom;
 
-
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($email,$password, $resultat, $titre_entretien, $ecole, $prenom, $nom)
+    public function __construct($email, $password, $resultat, $titre_entretien, $ecole, $prenom, $nom)
     {
         $this->email = $email;
 
@@ -45,9 +44,6 @@ class Decision extends Mailable
         $this->prenom = $prenom;
 
         $this->nom = $nom;
-
-
-
     }
 
     /**
@@ -55,11 +51,12 @@ class Decision extends Mailable
      *
      * @return $this
      */
-    public function build(){
+    public function build()
+    {
         return $this->from('candidatures@uir.ac.ma')
                         ->subject('Notification d\'admission au Master')
                         ->markdown('email.resultat_concours_rbs')
-                        ->with(['email' => $this->email, 'password' => $this->password, 'resultat' => $this->resultat, 'titre_entretien' => $this->titre_entretien, 'ecole' => $this->ecole,'prenom' => $this->prenom, 'nom' => $this->nom]);
+                        ->with(['email' => $this->email, 'password' => $this->password, 'resultat' => $this->resultat, 'titre_entretien' => $this->titre_entretien, 'ecole' => $this->ecole, 'prenom' => $this->prenom, 'nom' => $this->nom]);
         // else {
         //     return $this->from('candidatures@uir.ac.ma')
         //                 ->subject('Résultat Entretien')

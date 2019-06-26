@@ -16,12 +16,11 @@ $router->get('/', function () use ($router) {
     return view('app');
 });
 
-
 // Privées ADMIN avec Auth API
 $router->group(['prefix' => 'sms'], function ($router) {
 });
 
-###### DEBUT Fonction pour ecraser des horaires d'entretiens comme demandé par Said
+//##### DEBUT Fonction pour ecraser des horaires d'entretiens comme demandé par Said
 // $router->get('/reset-entretiens/{original}/{replaced}', function ($original,$replaced) use ($router) {
 //     $from = date('2019-05-07');
 //     $to = date('2019-05-31');
@@ -41,10 +40,9 @@ $router->group(['prefix' => 'sms'], function ($router) {
 //     }
 //     dd($test);
 // });
-######## FIN
+//####### FIN
 
-
-###### DEBUT Envoyer des emails à des utilisateurs ayant un entretien Entre Date et Date
+//##### DEBUT Envoyer des emails à des utilisateurs ayant un entretien Entre Date et Date
 // $router->get('/sendmail', function () use ($router) {
 //     $from = date('2019-05-07');
 //     $to = date('2019-05-31');
@@ -60,10 +58,9 @@ $router->group(['prefix' => 'sms'], function ($router) {
 
 //     dd('done');
 // });
-######## FIN
+//####### FIN
 
-
-###### DEBUT Envoyer des emails à des utilisateurs ayant un entretien Entre Date et Date
+//##### DEBUT Envoyer des emails à des utilisateurs ayant un entretien Entre Date et Date
 // $router->get('/sendmailpb', function () use ($router) {
 //     $from = date('2019-05-07');
 //     $to = date('2019-05-31');
@@ -79,7 +76,7 @@ $router->group(['prefix' => 'sms'], function ($router) {
 
 //     dd('done');
 // });
-######## FIN
+//####### FIN
 
 // Privées ADMIN avec Auth API
 $router->group(['prefix' => 'gestion', 'middleware' => 'auth_admin'], function ($router) {
@@ -164,7 +161,7 @@ $router->group(['prefix' => 'gestion', 'middleware' => 'auth_admin'], function (
     // Fin ADMIN Routes
 });
 // Authentification des Administrateurs
-$router->get('/gestion/connexion',['uses' => 'AdminController@Candidats']);
+$router->get('/gestion/connexion', ['uses' => 'AdminController@Candidats']);
 $router->post('/gestion/connexion_encours', ['uses' => 'AdminController@Connexion']);
 // Chek if admin is the one who's making the request
 $router->get('authAdmin', ['uses' => 'AdminController@AuthAdmin']);
@@ -184,7 +181,6 @@ $router->group(['prefix' => 'email'], function ($router) {
     $router->get('modifer-mdp', ['uses' => 'EmailController@PageNouveauMDP']);
 
     $router->get('confirmer-email', ['uses' => 'EmailController@PageConfirmerEmail']);
-
 });
 
 $router->group(['prefix' => 'api'], function ($router) {
@@ -224,7 +220,6 @@ $router->group(['prefix' => 'api'], function ($router) {
         $router->get('convocation-pdf/{id}', ['uses' => 'RdvController@TelechargerConvocation']);
 
         $router->get('check_cin', ['uses' => 'DataController@CheckCin']);
-
     });
 
     // Publiques sans auth API Token
@@ -241,7 +236,6 @@ $router->group(['prefix' => 'api'], function ($router) {
     $router->get('localisations', ['uses' => 'DataController@IndexLocations']);
 
     $router->get('formations', ['uses' => 'DataController@IndexFormations']);
-
 });
 
 $router->get('/{route:.*}/', function () {

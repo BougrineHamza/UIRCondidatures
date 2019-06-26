@@ -2,20 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Admin;
 use App\City;
+use App\Jury;
+use App\User;
+use App\Admin;
+use App\Country;
+use App\UirEcole;
+use App\Specialite;
 use App\ConcourDate;
 use App\ConcourTime;
 use App\Convocation;
-use App\Country;
-use App\Jury;
-use App\Specialite;
-use App\UirEcole;
 use App\UirFormation;
-use App\User;
-use Illuminate\Support\Facades\Mail;
 use App\Mail\Decision;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class AdminController extends Controller
 {
@@ -44,8 +44,7 @@ class AdminController extends Controller
 
             $res = $client->post(
                 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
-                ['form_params' =>
-                    ['grant_type' => 'password',
+                ['form_params' => ['grant_type' => 'password',
                         'username' => $request->email,
                         'password' => $request->password,
                         'client_id' => '00970931-21bf-46bc-9be9-f460d43fb6b7',
@@ -56,34 +55,29 @@ class AdminController extends Controller
             $access_token = json_decode($res->getBody())->access_token;
 
             if (strlen($access_token) > 20) {
-
                 $admin->api_token = str_random(58);
 
                 $admin->save();
             }
 
             return response()->json(['api_token' => $admin->api_token]);
-
         } else {
-
             return response()->json(['statut' => 'Cet utilisateur n\'est pas un administrateur']);
-
         }
-
     }
 
     // On importe le fichier excel dans la partie Entretiens par l'Admin
-    public function apiImport(Request $request,\Maatwebsite\ExcelLight\Excel $excel,\Maatwebsite\ExcelLight\Reader $reader){
-
+    public function apiImport(Request $request, \Maatwebsite\ExcelLight\Excel $excel, \Maatwebsite\ExcelLight\Reader $reader)
+    {
         $this->validate($request, [
-            'file' => 'required|mimes:xlsx,xls'
+            'file' => 'required|mimes:xlsx,xls',
         ]);
 
         $file = $request->file('file');
 
         $file_name = time().'-'.$file->getClientOriginalName();
 
-        $file->move('import',$file_name);
+        $file->move('import', $file_name);
 
         $reader = $excel->load('import/'.$file_name);
 
@@ -91,57 +85,52 @@ class AdminController extends Controller
 
         foreach ($reader->sheets() as $sheet) {
             foreach ($sheet->rows() as $key => $row) {
-                if($key != 1){
+                if ($key != 1) {
+                    $date_entretien = date('Y-m-d', $row->column('date_entretien')->getTimestamp());
 
-                $date_entretien = date('Y-m-d', $row->column('date_entretien')->getTimestamp());
+                    $uir_formation = $row->column('formation_id');
 
-                $uir_formation = $row->column('formation_id');
+                    $time = $row->column('heure_entretien');
 
-                $time = $row->column('heure_entretien');
+                    $jury = $row->column('jury_id');
 
-                $jury = $row->column('jury_id');
-
-
-                $bdd_date_entretien = ConcourDate::where([
+                    $bdd_date_entretien = ConcourDate::where([
                     'uirformation_id' => $uir_formation,
-                    'date_concours' => $date_entretien])->first();
+                    'date_concours' => $date_entretien, ])->first();
 
-                if(!$bdd_date_entretien){
-                    $nouveau_entretien_date = new ConcourDate();
-                    $nouveau_entretien_date->uirformation_id = $uir_formation;
-                    $nouveau_entretien_date->date_concours = $date_entretien;
-                    $nouveau_entretien_date->save();
+                    if (! $bdd_date_entretien) {
+                        $nouveau_entretien_date = new ConcourDate();
+                        $nouveau_entretien_date->uirformation_id = $uir_formation;
+                        $nouveau_entretien_date->date_concours = $date_entretien;
+                        $nouveau_entretien_date->save();
 
-                    $bdd_date_entretien = $nouveau_entretien_date;
-                }
+                        $bdd_date_entretien = $nouveau_entretien_date;
+                    }
 
-                $entretien = ConcourTime::where([
+                    $entretien = ConcourTime::where([
                     'concour_date_id' => $bdd_date_entretien->id,
                     'uir_formation_id' => $uir_formation,
                     'time' => $time,
                 ])->first();
 
-                if(!$entretien){
-                    $nouveau_entretien_time = new ConcourTime();
-                    $nouveau_entretien_time->concour_date_id = $bdd_date_entretien->id;
-                    $nouveau_entretien_time->jury_id = $jury;
-                    $nouveau_entretien_time->uir_formation_id = $uir_formation;
-                    $nouveau_entretien_time->time = $time;
-                    $nouveau_entretien_time->save();
+                    if (! $entretien) {
+                        $nouveau_entretien_time = new ConcourTime();
+                        $nouveau_entretien_time->concour_date_id = $bdd_date_entretien->id;
+                        $nouveau_entretien_time->jury_id = $jury;
+                        $nouveau_entretien_time->uir_formation_id = $uir_formation;
+                        $nouveau_entretien_time->time = $time;
+                        $nouveau_entretien_time->save();
+                    }
                 }
-               }
             }
         }
 
-
         return response()->json(['resultat' => 'done']);
-
     }
 
     public function Auth(Request $request)
     {
         return view('gestion.auth');
-
     }
 
     public function Deconnexion(Request $request)
@@ -153,10 +142,10 @@ class AdminController extends Controller
         }
 
         return ['deconnexion' => $user->save() ? true : false];
-
     }
 
-    public function EntretienUpdate(Request $request){
+    public function EntretienUpdate(Request $request)
+    {
         $this->validate($request, [
             'statut' => 'required|numeric|max:4',
             'id_entretien' => 'required|numeric',
@@ -165,12 +154,9 @@ class AdminController extends Controller
 
         $entretien = ConcourTime::find($request->id_entretien);
 
-        if($request->statut == 3){
-
+        if ($request->statut == 3) {
             $entretien->statut = null;
-
         } else {
-
             $entretien->statut = $request->statut;
 
             Mail::to($entretien->user)->send(new Decision($entretien->user->email, $entretien->user->password, $request->statut, $entretien->uirformation->titre, $entretien->uirformation->uirecole->titre, $entretien->user->first_name, $entretien->user->last_name));
@@ -186,9 +172,9 @@ class AdminController extends Controller
         $admin = Admin::where('api_token', $request->api_token)->first();
 
         if ($admin->uirecole_id != 0) {
-
-            $users = User::with('profil', 'cursus', 'convocation', 'concourtime.uirformation', 'stat')->whereHas('concourtime.uirformation.uirecole', function ($q) use ($admin) {$q->where('id', $admin->uirecole_id);})->orderBy('id', 'DESC')->get();
-
+            $users = User::with('profil', 'cursus', 'convocation', 'concourtime.uirformation', 'stat')->whereHas('concourtime.uirformation.uirecole', function ($q) use ($admin) {
+                $q->where('id', $admin->uirecole_id);
+            })->orderBy('id', 'DESC')->get();
         } else {
             $users = User::with('profil', 'cursus', 'convocation', 'concourtime.uirformation', 'stat')->orderBy('id', 'DESC')->get();
         }
@@ -196,35 +182,36 @@ class AdminController extends Controller
         $role = $admin->role;
 
         return view('gestion.main-gestion', compact('users', 'role'));
-
     }
+
     public function apiCandidats(Request $request)
-    {$admin = Admin::where('api_token', $request->api_token)->first();
+    {
+        $admin = Admin::where('api_token', $request->api_token)->first();
 
         if ($admin->uirecole_id != 0) {
-
-            $admin_formations = UirFormation::where('uirecole_id',$admin->uirecole_id)->pluck('id')->toArray();
+            $admin_formations = UirFormation::where('uirecole_id', $admin->uirecole_id)->pluck('id')->toArray();
 
             $users = new \Illuminate\Support\Collection();
 
-            foreach($admin_formations as $id_formation){
-            $fetched_users = User::with('profil', 'cursus', 'convocation', 'concourtime.uirformation', 'stat')->whereHas('cursus', function ($q) use ($id_formation) {$q->where('mes_formations_uir','like', '%'.$id_formation.'%');})->orderBy('id', 'DESC')->get();
+            foreach ($admin_formations as $id_formation) {
+                $fetched_users = User::with('profil', 'cursus', 'convocation', 'concourtime.uirformation', 'stat')->whereHas('cursus', function ($q) use ($id_formation) {
+                    $q->where('mes_formations_uir', 'like', '%'.$id_formation.'%');
+                })->orderBy('id', 'DESC')->get();
 
-            $users = $users->merge($fetched_users);
+                $users = $users->merge($fetched_users);
             }
 
             $users = $users->unique();
 
             $users = $users->values()->all();
-
         } else {
             $users = User::with('profil', 'cursus', 'convocation', 'concourtime.uirformation', 'stat')->orderBy('id', 'DESC')->get();
         }
-        return $users;
 
+        return $users;
     }
 
-////////////// DEBUT VOIR CONVOCATION
+    ////////////// DEBUT VOIR CONVOCATION
     public function VoirConvocation(Request $request)
     {
         $convocation = Convocation::where('id', $request->id)->orderBy('id', 'DESC')->first();
@@ -237,13 +224,14 @@ class AdminController extends Controller
         } else {
             return 'ID Convocation inexistant';
         }
-
     }
-////////////// FIN VOIR CONVOCATION
 
-////////////// DEBUT ECOLES
+    ////////////// FIN VOIR CONVOCATION
+
+    ////////////// DEBUT ECOLES
     public function apiEcoles(Request $request)
-    {$admin = Admin::where('api_token', $request->api_token)->first();
+    {
+        $admin = Admin::where('api_token', $request->api_token)->first();
 
         $ecoles = UirEcole::orderBy('id', 'DESC')->get();
 
@@ -251,7 +239,8 @@ class AdminController extends Controller
     }
 
     public function EcolesDelete(Request $request)
-    {$this->validate($request, [
+    {
+        $this->validate($request, [
         'id' => 'required',
     ]);
 
@@ -260,7 +249,6 @@ class AdminController extends Controller
         $ecole->delete();
 
         return response()->json(['statut' => 'success']);
-
     }
 
     public function EcolesAdd(Request $request)
@@ -280,7 +268,6 @@ class AdminController extends Controller
         $ecole->save();
 
         return response()->json(['statut' => 'success']);
-
     }
 
     public function Ecole(Request $request)
@@ -312,11 +299,13 @@ class AdminController extends Controller
 
         return response()->json(['statut' => 'success']);
     }
-///// END ECOLES
 
-///// DEBUT FORMATIONS
+    ///// END ECOLES
+
+    ///// DEBUT FORMATIONS
     public function apiFormations(Request $request)
-    {$admin = Admin::where('api_token', $request->api_token)->first();
+    {
+        $admin = Admin::where('api_token', $request->api_token)->first();
 
         if ($admin->uirecole_id != 0) {
             $formations = UirFormation::with('uirecole')->whereHas('uirecole', function ($q) use ($admin) {
@@ -332,7 +321,8 @@ class AdminController extends Controller
     }
 
     public function FormationsDelete(Request $request)
-    {$this->validate($request, [
+    {
+        $this->validate($request, [
         'id' => 'required',
     ]);
 
@@ -341,7 +331,6 @@ class AdminController extends Controller
         $formation->delete();
 
         return response()->json(['statut' => 'success']);
-
     }
 
     public function FormationsAdd(Request $request)
@@ -363,7 +352,6 @@ class AdminController extends Controller
         $formation->save();
 
         return response()->json(['statut' => 'success']);
-
     }
 
     public function Formation(Request $request)
@@ -397,20 +385,20 @@ class AdminController extends Controller
 
         return response()->json(['statut' => 'success']);
     }
-///// END FORMATIONS
 
-//////// DEBUT JURYS
+    ///// END FORMATIONS
+
+    //////// DEBUT JURYS
     public function apiJurys(Request $request)
-    {$admin = Admin::where('api_token', $request->api_token)->first();
+    {
+        $admin = Admin::where('api_token', $request->api_token)->first();
 
         if ($admin->uirecole_id != 0) {
             $jurys = Jury::with('uirecole')->whereHas('uirecole', function ($q) use ($admin) {
                 $q->where('id', $admin->uirecole_id);
             })->orderBy('id', 'DESC')->get();
-
         } else {
             $jurys = Jury::with('uirecole')->orderBy('id', 'DESC')->get();
-
         }
 
         $ecoles = UirEcole::all();
@@ -421,7 +409,8 @@ class AdminController extends Controller
     }
 
     public function JurysDelete(Request $request)
-    {$this->validate($request, [
+    {
+        $this->validate($request, [
         'id' => 'required',
     ]);
 
@@ -430,7 +419,6 @@ class AdminController extends Controller
         $jury->delete();
 
         return response()->json(['statut' => 'success']);
-
     }
 
     public function JurysAdd(Request $request)
@@ -452,7 +440,6 @@ class AdminController extends Controller
         $jury->save();
 
         return response()->json(['statut' => 'success']);
-
     }
 
     public function Jury(Request $request)
@@ -486,16 +473,18 @@ class AdminController extends Controller
 
         return response()->json(['statut' => 'success']);
     }
-/////// END JURYS
 
-////// DEBUT ENTRETIENS
+    /////// END JURYS
+
+    ////// DEBUT ENTRETIENS
     public function apiEntretiens(Request $request)
-    {$admin = Admin::where('api_token', $request->api_token)->first();
+    {
+        $admin = Admin::where('api_token', $request->api_token)->first();
 
         if ($admin->uirecole_id == 0) {
-            $entretiens = ConcourTime::with('user', 'user.profil','user.cursus', 'jury', 'concourdate', 'uirformation', 'uirformation.uirecole')->orderBy('id', 'DESC')->get();
+            $entretiens = ConcourTime::with('user', 'user.profil', 'user.cursus', 'jury', 'concourdate', 'uirformation', 'uirformation.uirecole')->orderBy('id', 'DESC')->get();
         } else {
-            $entretiens = ConcourTime::with('user', 'user.profil','user.cursus', 'jury', 'concourdate', 'uirformation', 'uirformation.uirecole')->whereHas('uirformation.uirecole', function ($q) use ($admin) {
+            $entretiens = ConcourTime::with('user', 'user.profil', 'user.cursus', 'jury', 'concourdate', 'uirformation', 'uirformation.uirecole')->whereHas('uirformation.uirecole', function ($q) use ($admin) {
                 $q->where('id', $admin->uirecole_id);
             })->orderBy('id', 'DESC')->get();
         }
@@ -503,7 +492,6 @@ class AdminController extends Controller
         $ecoles = UirEcole::all();
 
         return compact('entretiens', 'ecoles');
-
     }
 
     public function GetFormasJurys(Request $request)
@@ -517,11 +505,11 @@ class AdminController extends Controller
         $jurys_list = Jury::where('uirecole_id', $request->id)->get();
 
         return response()->json(['formations_list' => $formations_list, 'jurys_list' => $jurys_list]);
-
     }
 
     public function EntretiensDelete(Request $request)
-    {$this->validate($request, [
+    {
+        $this->validate($request, [
         'id' => 'required',
     ]);
 
@@ -530,7 +518,6 @@ class AdminController extends Controller
         $entretien->delete();
 
         return response()->json(['statut' => 'success']);
-
     }
 
     public function EntretiensAdd(Request $request)
@@ -545,11 +532,8 @@ class AdminController extends Controller
         $date = ConcourDate::where(['date_concours' => $request->date_concours, 'uirformation_id' => $request->uir_formation_id])->first();
 
         if ($date) {
-
             $concour_date_id = $date->id;
-
         } else {
-
             $date = new ConcourDate();
 
             $date->date_concours = $request->date_concours;
@@ -574,12 +558,10 @@ class AdminController extends Controller
         $entretien->save();
 
         return response()->json(['statut' => 'success']);
-
     }
 
     public function Entretien(Request $request)
     {
-
         $this->validate($request, [
             'id' => 'required',
         ]);
@@ -606,11 +588,8 @@ class AdminController extends Controller
         $date = ConcourDate::where(['date_concours' => $request->date_concours, 'uirformation_id' => $request->uir_formation_id])->first();
 
         if ($date) {
-
             $concour_date_id = $date->id;
-
         } else {
-
             $date = new ConcourDate();
 
             $date->date_concours = $request->date_concours;
@@ -638,18 +617,21 @@ class AdminController extends Controller
 
         return response()->json(['statut' => 'success']);
     }
-////// END ENTRETIENS
 
-///// DEBUT SPECIALITES
+    ////// END ENTRETIENS
+
+    ///// DEBUT SPECIALITES
     public function apiSpecialites(Request $request)
-    {$admin = Admin::where('api_token', $request->api_token)->first();
+    {
+        $admin = Admin::where('api_token', $request->api_token)->first();
         $specialites = Specialite::orderBy('id', 'DESC')->get();
-        return compact('specialites');
 
+        return compact('specialites');
     }
 
     public function SpecialitesDelete(Request $request)
-    {$this->validate($request, [
+    {
+        $this->validate($request, [
         'id' => 'required',
     ]);
 
@@ -658,7 +640,6 @@ class AdminController extends Controller
         $specialite->delete();
 
         return response()->json(['statut' => 'success']);
-
     }
 
     public function SpecialitesAdd(Request $request)
@@ -674,7 +655,6 @@ class AdminController extends Controller
         $specialite->save();
 
         return response()->json(['statut' => 'success']);
-
     }
 
     public function Specialite(Request $request)
@@ -702,36 +682,39 @@ class AdminController extends Controller
 
         return response()->json(['statut' => 'success']);
     }
-///// FIN SPECIALITES
 
-//// DEBUT VILLES/PAYS/NATIONALITES
+    ///// FIN SPECIALITES
+
+    //// DEBUT VILLES/PAYS/NATIONALITES
     public function apiVilles(Request $request)
-    {$admin = Admin::where('api_token', $request->api_token)->first();
+    {
+        $admin = Admin::where('api_token', $request->api_token)->first();
         $villes = City::with('country')->get();
         $payss = Country::all();
+
         return compact('villes', 'payss');
     }
 
     public function Ville(Request $request)
-    {$this->validate($request, [
+    {
+        $this->validate($request, [
         'id' => 'required',
     ]);
 
         $ville = City::find($request->id);
 
         return response()->json(['ville' => $ville]);
-
     }
 
     public function Country(Request $request)
-    {$this->validate($request, [
+    {
+        $this->validate($request, [
         'id' => 'required',
     ]);
 
         $Country = Country::find($request->id);
 
         return response()->json(['Country' => $Country]);
-
     }
 
     public function VillesUpdate(Request $request)
@@ -751,11 +734,11 @@ class AdminController extends Controller
         $ville->save();
 
         response()->json(['statut' => 'enregistré']);
-
     }
 
     public function VillesAdd(Request $request)
-    {$this->validate($request, [
+    {
+        $this->validate($request, [
         'country_id' => 'required',
         'titre' => 'required',
     ]);
@@ -772,7 +755,8 @@ class AdminController extends Controller
     }
 
     public function VillesDelete(Request $request)
-    {$this->validate($request, [
+    {
+        $this->validate($request, [
         'id' => 'required',
     ]);
 
@@ -781,7 +765,7 @@ class AdminController extends Controller
         response()->json(['statut' => 'enregistré']);
     }
 
-//// - Pays -
+    //// - Pays -
 
     public function PaysUpdate(Request $request)
     {
@@ -803,7 +787,8 @@ class AdminController extends Controller
     }
 
     public function PaysAdd(Request $request)
-    {$this->validate($request, [
+    {
+        $this->validate($request, [
         'titre' => 'required',
         'nationalite' => 'required',
     ]);
@@ -820,28 +805,31 @@ class AdminController extends Controller
     }
 
     public function PaysDelete(Request $request)
-    {$this->validate($request, [
+    {
+        $this->validate($request, [
         'id' => 'required',
     ]);
 
         $Country = Country::find($request->id)->delete();
 
         response()->json(['statut' => 'enregistré']);
-
     }
-//// FIN VILLES/PAYS/NATIONALITES
 
-///// DEBUT USERS
+    //// FIN VILLES/PAYS/NATIONALITES
+
+    ///// DEBUT USERS
     public function apiUsers(Request $request)
-    {$admin = Admin::where('api_token', $request->api_token)->first();
+    {
+        $admin = Admin::where('api_token', $request->api_token)->first();
         $admins = Admin::with('uirecole')->orderBy('id', 'DESC')->get();
         $ecoles = UirEcole::all();
-        return compact('admins', 'ecoles');
 
+        return compact('admins', 'ecoles');
     }
 
     public function UsersDelete(Request $request)
-    {$this->validate($request, [
+    {
+        $this->validate($request, [
         'id' => 'required',
     ]);
 
@@ -850,7 +838,6 @@ class AdminController extends Controller
         $admin->delete();
 
         return response()->json(['statut' => 'success']);
-
     }
 
     public function UsersAdd(Request $request)
@@ -881,20 +868,19 @@ class AdminController extends Controller
         ]);
         $candidat = User::where('id', $request->id)->with('profil', 'cursus', 'stat', 'convocation', 'concourtime', 'concourtime.uirformation', 'concourtime.uirformation.uirecole', 'concourtime.concourdate')->first();
 
-        if($candidat->cursus){
-        $array = explode(',',$candidat->cursus->mes_formations_uir);
+        if ($candidat->cursus) {
+            $array = explode(',', $candidat->cursus->mes_formations_uir);
 
-        $formations = UirFormation::whereIn('id',$array)->get();
+            $formations = UirFormation::whereIn('id', $array)->get();
         } else {
             $formations = null;
         }
 
-        return response()->json(['candidat' => $candidat,'formations_choisies' => $formations]);
+        return response()->json(['candidat' => $candidat, 'formations_choisies' => $formations]);
     }
 
     public function UserToken(Request $request)
     {
-
         $admin = Admin::where('api_token', $request->api_token)->with('uirecole')->first();
 
         return response()->json(['admin' => $admin]);
@@ -921,6 +907,6 @@ class AdminController extends Controller
 
         return response()->json(['statut' => 'success']);
     }
-//// FIN USERS
 
+    //// FIN USERS
 }

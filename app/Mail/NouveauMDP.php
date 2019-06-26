@@ -14,13 +14,12 @@ class NouveauMDP extends Mailable
 
     public $password;
 
-
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($email,$password)
+    public function __construct($email, $password)
     {
         $this->email = $email;
 

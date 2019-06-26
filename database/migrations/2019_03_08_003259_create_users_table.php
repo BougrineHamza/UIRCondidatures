@@ -19,7 +19,7 @@ class CreateUsersTable extends Migration
             $table->string('last_name');
             $table->string('email')->unique();
             $table->string('password')->nullable();
-            $table->string('api_token',60)->nullable();
+            $table->string('api_token', 60)->nullable();
             $table->boolean('uir_student');
             $table->string('email_bounced')->nullable();
             $table->boolean('email_confirmed')->default(0);

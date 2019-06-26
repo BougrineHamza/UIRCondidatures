@@ -16,7 +16,7 @@ class Auth_Admin
      */
     public function handle($request, Closure $next)
     {
-        if($request->api_token && Admin::where('api_token',$request->api_token)->first()){
+        if ($request->api_token && Admin::where('api_token', $request->api_token)->first()) {
             return $next($request);
         } else {
             return redirect('/gestion/connexion');

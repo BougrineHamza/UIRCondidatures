@@ -10,8 +10,7 @@ class VerifierEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
-
-     public $email;
+    public $email;
 
     public $password;
 
@@ -20,7 +19,7 @@ class VerifierEmail extends Mailable
      *
      * @return void
      */
-    public function __construct($email,$password)
+    public function __construct($email, $password)
     {
         $this->email = $email;
 

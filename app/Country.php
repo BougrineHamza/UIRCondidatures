@@ -2,12 +2,11 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
 use App\City;
+use Illuminate\Database\Eloquent\Model;
 
 class Country extends Model
 {
-
     /**
      * The attributes that are mass assignable.
      *
@@ -15,7 +14,7 @@ class Country extends Model
      */
     protected $fillable = [
         'titre',
-        'nationalite'
+        'nationalite',
     ];
 
     /**
@@ -27,13 +26,10 @@ class Country extends Model
 
     ];
 
-
     public $timestamps = false;
-    
 
     public function city()
     {
         return $this->hasMany(City::class);
-
     }
 }

@@ -2,17 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Cursus;
 use App\User;
-
+use App\Cursus;
+use Illuminate\Http\Request;
 
 class CursusController extends Controller
 {
-
     // Modifier/Créer Cursus candidat
-    public function ModifierCursus(Request $request){
-		$this->validate($request, [
+    public function ModifierCursus(Request $request)
+    {
+        $this->validate($request, [
             'niveau' => 'required|max:10',
             'annee_diplome' => 'required|numeric',
             'countryedu_id' => 'required|max:30',
@@ -21,16 +20,16 @@ class CursusController extends Controller
             'typedu' => 'required|max:30',
             'specialite_id' => 'required|max:50',
             'school' => 'required|max:80',
-            'api_token' => 'required|max:60'
+            'api_token' => 'required|max:60',
         ]);
 
-        $user = User::where('api_token',$request->api_token)->first();
+        $user = User::where('api_token', $request->api_token)->first();
 
-        if(!$user->cursus){
+        if (! $user->cursus) {
             $cursus = new Cursus();
             $cursus->user_id = $user->id;
         } else {
-            $cursus = Cursus::where('user_id',$user->id)->first();
+            $cursus = Cursus::where('user_id', $user->id)->first();
         }
         // $cursus = Cursus::whereHas('user',function($q) use ($request){
         //     $q->where('api_token', $request->api_token);
@@ -47,10 +46,5 @@ class CursusController extends Controller
         $cursus->save();
 
         return response()->json(['status' => 'success']);
-
-	}
-
-
-
+    }
 }
-

@@ -2,12 +2,11 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
 use App\User;
+use Illuminate\Database\Eloquent\Model;
 
 class Cloned extends Model
 {
-
     /**
      * The attributes that are mass assignable.
      *
@@ -31,5 +30,4 @@ class Cloned extends Model
     //     return $this->belongsTo(User::class);
 
     // }
-
 }
